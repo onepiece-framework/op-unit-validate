@@ -20,14 +20,16 @@
  */
 class Validate
 {
-	/**
-	 * Use OP-CORE.
+	/** trait
+	 *
 	 */
-	use OP_CORE
-	{
-		//	...
-	}
+	use OP_CORE;
 
+	/** Parse config.
+	 *
+	 * @param  array $config
+	 * @return array
+	 */
 	static function _ParseConfig($config)
 	{
 		//	...
@@ -43,17 +45,42 @@ class Validate
 		return $validate;
 	}
 
-	static function Get($configs, $sourse, &$errors)
+	/** Sanitize
+	 *
+	 * @param  array $configs
+	 * @param  array $sourse
+	 * @param  array $errors
+	 * @return array
+	 */
+	static function Sanitize($configs, $sourse, &$errors)
 	{
 		//	...
 		$result = [];
 
 		//	...
+		if( empty($configs) ){
+			Notice::Set("Configuration was empty.");
+			return $result;
+		}
+
+		//	...
 		foreach($configs as $config){
 			//	...
-			if( empty($config['validate']) ){
+			if(!$name = ifset($config['name']) ){
+				D($config);
 				continue;
 			}
+
+			//	...
+			if( empty($config['validate']) ){
+				$result[$name] = ifset($sourse[$name]);
+			}else{
+				//	...
+			}
+
+
+			continue;
+
 
 			//	...
 			$name  = $config['name'];
