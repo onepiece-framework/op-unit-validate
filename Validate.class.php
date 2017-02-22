@@ -47,89 +47,44 @@ class Validate
 
 	/** Sanitize
 	 *
-	 * @param  array $configs
-	 * @param  array $sourse
+	 * @param  array $form   form configuration.
+	 * @param  array $sourse request by internet.
 	 * @param  array $errors
 	 * @return array
 	 */
-	static function Sanitize($configs, $sourse, &$errors)
+	static function Sanitize($form, $sourse, &$errors)
 	{
 		//	...
 		$result = [];
 
 		//	...
-		if( empty($configs) ){
-			Notice::Set("Configuration was empty.");
+		if( empty($form) ){
+			Notice::Set("\$form is empty.");
 			return $result;
 		}
 
 		//	...
-		foreach($configs as $config){
+		foreach($form['input'] as $name => $input){
 			//	...
-			if(!$name = ifset($config['name']) ){
-				D($config);
-				continue;
-			}
+			$io = true;
 
 			//	...
-			if( empty($config['validate']) ){
-				$result[$name] = ifset($sourse[$name]);
-			}else{
-				//	...
-			}
+			$validate = ifset($input['validate'], []);
 
-
-			continue;
-
-
-			//	...
-			$name  = $config['name'];
-			$value = ifset($sourse[$name]);
-
-			//	...
-			if(!mb_strlen($value)){
-				$errors[$name]['required'] = true;
-				continue;
-			}
-
-			//	...
-			switch( $type = gettype($config['validate']) ){
-				case 'array':
-					$validate = $config['validate'];
-					break;
-
-				case 'string':
-					$validate = self::_ParseConfig($config['validate']);
-					break;
-
-				default:
-					continue;
-			}
-
-			//	...
-			$failed = null;
-			foreach($validate as $key => $evalu){
-				switch($key){
-					case 'integer':
-					case 'numeric':
-					case 'float':
-						$function_name = 'is_'.$key;
-						$failed = $function_name($value) ? false: true;
-						break;
-					default:
-						D("Does not define this key. ($key)");
-						$failed = true;
-				}
-
-				//	...
-				if( $failed ){
-					$errors[$name][$key] = true;
-					continue;
+			//	required
+			if( isset($validate['required']) ){
+				if( isset($sourse[$name]) ){
+					if( strlen($sourse[$name]) === 0 ){
+						$errors[$name]['required'] = true;
+						continue;
+					}
 				}
 			}
 
 			//	...
-			$result[$name] = $value;
+			if( isset($sourse[$name]) ){
+				$result[$name] = Escape($sourse[$name]);
+			}
 		}
 
 		//	...
