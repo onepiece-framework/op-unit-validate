@@ -25,26 +25,6 @@ class Validate
 	 */
 	use OP_CORE;
 
-	/** Parse config.
-	 *
-	 * @param  array $config
-	 * @return array
-	 */
-	static function _ParseConfig($config)
-	{
-		//	...
-		$validate = [];
-
-		//	...
-		foreach(explode(',',$config) as $temp){
-			$key = trim($temp);
-			$validate[$key] = true;
-		}
-
-		//	...
-		return $validate;
-	}
-
 	/** Sanitize
 	 *
 	 * @param  array $form   form configuration.
@@ -66,13 +46,12 @@ class Validate
 		//	...
 		foreach($form['input'] as $name => $input){
 			//	...
-			$io = true;
-
-			//	...
-			$validate = ifset($input['validate'], []);
+			if( empty($input['validate']) ){
+				continue;
+			}
 
 			//	required
-			if( isset($validate['required']) ){
+			if( ifset($input['validate']['required']) ){
 				if( isset($sourse[$name]) ){
 					if( is_array($sourse[$name]) ){
 						if( count($sourse[$name]) === 1 ){
@@ -82,6 +61,16 @@ class Validate
 						if( strlen($sourse[$name]) === 0 ){
 							$errors[$name]['required'] = true;
 						}
+					}
+				}
+			}
+
+			//	string
+			if( $str = ifset($input['validate']['string']) ){
+				//	ASCII
+				if( strpos($str, 'ascii') !== false ){
+					if( preg_match("/[^\x09\x0a\x0d\x20-\x7E]/", $sourse[$name]) ){
+						$errors[$name]['string'] = 'ascii';
 					}
 				}
 			}
