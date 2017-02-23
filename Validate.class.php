@@ -73,11 +73,16 @@ class Validate
 
 			//	required
 			if( isset($validate['required']) ){
-				if( isset($sourse[$name]) and strlen($sourse[$name]) ){
-					//	OK
-				}else{
-					$errors[$name]['required'] = true;
-					continue;
+				if( isset($sourse[$name]) ){
+					if( is_array($sourse[$name]) ){
+						if( count($sourse[$name]) === 1 ){
+							$errors[$name]['required'] = true;
+						}
+					}else{
+						if( strlen($sourse[$name]) === 0 ){
+							$errors[$name]['required'] = true;
+						}
+					}
 				}
 			}
 
