@@ -51,7 +51,7 @@ class Validate
 			}
 
 			//	required
-			if( ifset($input['validate']['required']) ){
+			if( isset($input['validate']['required']) and $input['validate']['required'] ){
 				if( isset($sourse[$name]) ){
 					if( is_array($sourse[$name]) ){
 						if( count($sourse[$name]) === 1 ){
@@ -66,7 +66,9 @@ class Validate
 			}
 
 			//	string
-			if( $str = ifset($input['validate']['string']) ){
+			if( isset( $input['validate']['string']) and isset($sourse[$name]) ){
+				$str = $input['validate']['string'];
+
 				//	ASCII
 				if( strpos($str, 'ascii') !== false ){
 					if( preg_match("/[^\x09\x0a\x0d\x20-\x7E]/", $sourse[$name]) ){
