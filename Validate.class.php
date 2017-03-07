@@ -69,7 +69,7 @@ class Validate
 		}
 
 		//	...
-		if(!checkdnsrr($host,'MX')){
+		if(!Env::isLocalhost() and !checkdnsrr($host,'MX')){
 			return true;
 		}
 	}
