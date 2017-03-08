@@ -9,8 +9,7 @@
  * @copyright Tomoaki Nagahara All right reserved.
  */
 
-/**
- * Validate
+/** Validate
  *
  * @created   2017-01-31
  * @version   1.0
@@ -33,8 +32,8 @@ class Validate
 	static private function _Ascii($sourse)
 	{
 		//	...
-		if(!is_string($sourse) ){
-			return true;
+		if( is_array($sourse) ){
+			$sourse = join("\n", $sourse);
 		}
 
 		//	...
@@ -50,6 +49,16 @@ class Validate
 	 */
 	static private function _Email($sourse)
 	{
+		//	...
+		if( is_string($sourse) === false ){
+			return;
+		}
+
+		//	...
+		if( strlen($sourse) === 0 ){
+			return;
+		}
+
 		//	Do not allow alias names.
 		if( strpos($sourse, '+') !== false ){
 			return true;
@@ -81,7 +90,6 @@ class Validate
 	 */
 	static private function _Phone($sourse)
 	{
-		//	...
 		if( preg_match('/[^-0-9\.\+\ )]/i', $sourse, $m) ){
 			return true;
 		}
@@ -94,12 +102,6 @@ class Validate
 	 */
 	static private function _Required($sourse)
 	{
-		//	...
-		if( empty($sourse) ){
-			$fail = true;
-		}
-
-		//	...
 		if( is_array($sourse) ){
 			if( count($sourse) === 1 ){
 				return true;
@@ -118,7 +120,7 @@ class Validate
 	 * @param  array $errors
 	 * @return array
 	 */
-	static function Sanitize($form, $sourse)
+	static function Sanitize($form, $sourses)
 	{
 		//	...
 		$errors = [];
@@ -152,56 +154,72 @@ class Validate
 				}
 
 				//	...
+				$sourse = ifset($sourses[$name], '');
+
+				//	...
 				switch( $validate ){
 					case '':
 						break;
 
 					case 'required':
-						$fail = self::_Required($sourse[$name]);
+						$fail = self::_Required($sourses[$name]);
 						break;
 
 					case 'ascii':
 					case 'english':
-						$fail = self::_Ascii($sourse[$name]);
+						$fail = self::_Ascii($sourse);
 						break;
 
 					case 'email':
-						$fail = self::_Email($sourse[$name]);
+						$fail = self::_Email($sourse);
 						break;
 
 					case 'phone':
-						$fail = self::_Phone($sourse[$name]);
+						$fail = self::_Phone($sourse);
 						break;
 
 					case 'short':
-						$fail = (strlen($sourse[$name]) < $value) ? true: false;
+						if( $len  = strlen($sourse) ){
+							$fail = ( $len < $value) ? true: false;
+						}
 						break;
 
 					case 'long':
-						$fail = (strlen($sourse[$name]) > $value) ? true: false;
+						$fail = (strlen($sourse) > $value) ? true: false;
 						break;
 
 					case 'number':
-						if( strlen($sourse[$name]) ){
-							$fail = is_numeric($sourse[$name]) ? false: true;
+						if( strlen($sourse) ){
+							$fail = is_numeric($sourse) ? false: true;
 						}
 						break;
 
 					case 'min':
-						if( is_numeric($sourse[$name]) ){
-							$fail = ($sourse[$name] < $value) ? true: false;
+						if( is_numeric($sourse) and $sourse < $value ){
+							$fail = true;
 						}
 						break;
 
 					case 'max':
-						if( is_numeric($sourse[$name]) ){
-							$fail = ($sourse[$name] > $value) ? true: false;
+						if( is_numeric($sourse) and $sourse > $value ){
+							$fail = true;
+						}
+						break;
+
+					case 'positive':
+						if( is_numeric($sourse) and $sourse < 0 ){
+							$fail = true;
+						}
+						break;
+
+					case 'negative':
+						if( is_numeric($sourse) and $sourse > 0 ){
+							$fail = true;
 						}
 						break;
 
 					default:
-						D($validate);
-						D("Does not support this validation. ($validate)");
+						Notice::Set("Does not support this validation. ($validate)");
 				}
 
 				//	...
