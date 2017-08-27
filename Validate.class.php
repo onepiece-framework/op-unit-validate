@@ -61,25 +61,33 @@ class Validate
 
 		//	Do not allow alias names.
 		if( strpos($source, '+') !== false ){
-			return true;
+			return '+';
 		}
 
 		//	...
 		if(!strpos($source, '@') ){
-			return true;
+			return '@';
 		}
 
 		//	...
 		list($addr, $host) = explode('@', $source);
 
 		//	...
-		if( preg_match('/[^-_a-z0-9\.]/i', $addr, $m) ){
-			return true;
+		if(empty($host)){
+			return 'host';
 		}
 
 		//	...
-		if(!Env::isLocalhost() and !checkdnsrr($host,'MX')){
-			return true;
+		if( $host !== 'gmail.com' ){
+			//	...
+			if( /* !Env::isLocalhost() and */ !checkdnsrr($host,'MX')){
+				return $host;
+			}
+		}
+
+		//	...
+		if( preg_match('/[^-_a-z0-9\.]/i', $addr, $m) ){
+			return $addr;
 		}
 	}
 
@@ -126,7 +134,7 @@ class Validate
 	 * @param  array $errors
 	 * @return array
 	 */
-	static function Sanitize($form, $sources)
+	static function Validation($form, $sources, $saved)
 	{
 		//	...
 		$errors = [];
@@ -145,6 +153,9 @@ class Validate
 			}
 
 			//	...
+			$source = ifset($sources[$name], ifset($saved[$name], ''));
+
+			//	...
 			foreach( explode(',', $input['validate'].',') as $validate ){
 				//	...
 				$fail = null;
@@ -160,15 +171,12 @@ class Validate
 				}
 
 				//	...
-				$source = ifset($sources[$name], '');
-
-				//	...
 				switch( $validate ){
 					case '':
 						break;
 
 					case 'required':
-						$fail = self::_Required($sources[$name]);
+						$fail = self::_Required($source);
 						break;
 
 					case 'ascii':
@@ -185,13 +193,11 @@ class Validate
 						break;
 
 					case 'short':
-						if( $len  = strlen($source) ){
-							$fail = ( $len < $value) ? true: false;
-						}
+						$fail = (mb_strlen($source) < $value) ? true: false;
 						break;
 
 					case 'long':
-						$fail = (strlen($source) > $value) ? true: false;
+						$fail = (mb_strlen($source) > $value) ? true: false;
 						break;
 
 					case 'number':
@@ -230,7 +236,7 @@ class Validate
 
 				//	...
 				if( $fail ){
-					$errors[$name][$validate] = true;
+					$errors[$name][$validate] = $fail;
 				}
 			}
 		}
