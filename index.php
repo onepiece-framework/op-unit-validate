@@ -8,9 +8,6 @@
  * @author    Tomoaki Nagahara <tomoaki.nagahara@gmail.com>
  * @copyright Tomoaki Nagahara All right reserved.
  */
-spl_autoload_register(function ($name){
-	$path = __DIR__."/{$name}.class.php";
-	if( file_exists($path) ){
-		include($path);
-	}
-});
+//	...
+//include(__DIR__.'/autoloader.php');
+include(__DIR__.'/Validate.class.php');
