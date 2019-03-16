@@ -15,6 +15,13 @@
  */
 namespace OP\UNIT;
 
+/** Used class
+ *
+ */
+use OP\OP_CORE;
+use OP\OP_UNIT;
+use OP\IF_UNIT;
+
 /** Validate
  *
  * @created   2017-01-31
@@ -23,12 +30,12 @@ namespace OP\UNIT;
  * @author    Tomoaki Nagahara <tomoaki.nagahara@gmail.com>
  * @copyright Tomoaki Nagahara All right reserved.
  */
-class Validate
+class Validate implements IF_UNIT
 {
 	/** trait
 	 *
 	 */
-	use \OP_CORE;
+	use OP_CORE, OP_UNIT;
 
 	/** EMail
 	 *
@@ -266,11 +273,11 @@ class Validate
 	 * @param  array   $values
 	 * @return boolean $fail
 	 */
-	static function Evaluation($rule, $value, &$error, $values=null)
+	function Evaluation($rule, $value, &$error, $values=null)
 	{
 		//	...
-		$rule  = Escape($rule);
-		$value = Escape($value);
+		$rule  = $this->Encode($rule);
+		$value = $this->Encode($value);
 
 		//	...
 		$failed = null;
