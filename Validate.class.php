@@ -71,10 +71,17 @@ class Validate implements IF_UNIT
 		}
 
 		//	...
+		/*
 		if( $host !== 'gmail.com' ){
 			if(!checkdnsrr($host,'MX') ){
 				return $host;
 			}
+		}
+		*/
+
+		//	...
+		if(!gethostbynamel($host) ){
+			return $host;
 		}
 
 		//	...
