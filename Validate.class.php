@@ -21,6 +21,7 @@ namespace OP\UNIT;
 use OP\OP_CORE;
 use OP\OP_UNIT;
 use OP\IF_UNIT;
+use function OP\Encode;
 
 /** Validate
  *
@@ -276,8 +277,8 @@ class Validate implements IF_UNIT
 	function Evaluation($rule, $value, &$error, $values=null)
 	{
 		//	...
-		$rule  = $this->Encode($rule);
-		$value = $this->Encode($value);
+		$rule  = Encode($rule);
+		$value = Encode($value);
 
 		//	...
 		$failed = null;
