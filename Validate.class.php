@@ -302,6 +302,9 @@ class Validate implements IF_UNIT
 					break;
 
 				case 'required':
+					if(!$eval ){
+						$failed = false;
+					}else
 					if( $error[$key] = self::_Required($value) ){
 						$failed = true;
 						break 2;
@@ -394,7 +397,7 @@ class Validate implements IF_UNIT
 			}
 
 			//	...
-			if(!$failed and $error[$key] ){
+			if(!$failed and $error[$key] ?? null ){
 				$failed = true;
 			}
 		}
