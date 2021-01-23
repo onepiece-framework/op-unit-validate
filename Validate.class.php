@@ -164,6 +164,10 @@ class Validate implements IF_UNIT
 				$eval = '/([^\p{In_CJK_Unified_Ideographs}]+)/';
 				break;
 
+			case 'base58': // For bitcoin address. Bitcoin use 0? regtest only?
+				$eval = '/([^123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz]+)/';
+				break;
+
 			default:
 				$eval = $which;
 			break;
@@ -331,6 +335,7 @@ class Validate implements IF_UNIT
 				case 'hankaku':
 				case 'zenkaku':
 				case 'chinese':
+				case 'base58':
 					if( $regexp = self::_RegExp($value, $key) ){
 						$regexp = $regexp[1];
 					}
